@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tilecast</title>
+<meta name="description" content="Mirror your iPad's screen to a Windows PC over your own Wi-Fi. Free, nothing to install on the iPad.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #E9E9E4; --panel: #F5F5F1; --ink: #0A0A0A; --text2: #3A3A36; --muted: #5A5A55;
+    --line: #0A0A0A; --soft: #BDBDB6; --inv: #0A0A0A; --invtext: #E9E9E4; --invsoft: #C9C9C4; --red: #FF3B1F;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E0E0D; --panel: #171716; --ink: #E9E9E4; --text2: #C9C9C4; --muted: #8A8A85;
+      --line: #3A3A36; --soft: #262624; --inv: #E9E9E4; --invtext: #0A0A0A; --invsoft: #3A3A36;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E0E0D; --panel: #171716; --ink: #E9E9E4; --text2: #C9C9C4; --muted: #8A8A85;
+    --line: #3A3A36; --soft: #262624; --inv: #E9E9E4; --invtext: #0A0A0A; --invsoft: #3A3A36;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 "Space Grotesk", system-ui, sans-serif; }
+  a { color: inherit; }
+  .mono { font-family: "Space Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; }
+  .label { font: 400 11px/1.4 "Space Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .doto { font-family: "Doto", "Space Mono", monospace; font-weight: 800; }
+  .wrap { max-width: 1120px; margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  section, header, footer { border-bottom: 1px solid var(--line); }
+
+  /* Top bar: hairline cells, like the app */
+  header { display: flex; height: 48px; position: sticky; top: 0; background: var(--bg); z-index: 2; }
+  header .cell { display: flex; align-items: center; gap: 10px; padding: 0 18px; border-right: 1px solid var(--line); font-size: 12px; }
+  header .grow { flex: 1; }
+  header nav { display: flex; }
+  header nav a { display: flex; align-items: center; padding: 0 18px; border-left: 1px solid var(--line); text-decoration: none; font-size: 12px; }
+  header nav a:hover, .btn:hover { filter: brightness(.92); }
+  .sq { width: 10px; height: 10px; background: var(--ink); flex: none; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1fr 380px; }
+  .hero .copy { padding: 56px 40px 48px; border-right: 1px solid var(--line); }
+  h1 { font: 700 clamp(40px, 6vw, 68px)/1.02 "Space Grotesk", sans-serif; letter-spacing: -.02em; margin: 14px 0 18px; }
+  .lead { font-size: 19px; color: var(--text2); max-width: 34em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; align-items: stretch; }
+  .btn { display: inline-flex; align-items: center; gap: 12px; padding: 0 24px; height: 52px; text-decoration: none; font: 700 13px "Space Mono", monospace; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--line); }
+  .btn.primary { background: var(--inv); color: var(--invtext); border-color: var(--inv); }
+  .btn.red { background: var(--red); color: #0A0A0A; border-color: var(--red); }
+  .meta { margin-top: 14px; }
+  .field { display: grid; place-items: center; padding: 32px; background: var(--panel); position: relative; }
+  .field .label { position: absolute; top: 18px; left: 20px; }
+  .field .label.r { left: auto; right: 20px; }
+  .dots { display: grid; grid-template-columns: repeat(11, 1fr); gap: 0; width: min(100%, 306px); aspect-ratio: 1; }
+  .dots i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); place-self: center;
+            animation: pulse 3.2s ease-in-out infinite; animation-delay: calc(var(--d) * .17s); opacity: .14; }
+  .dots i.c { width: 12px; height: 12px; background: var(--red); opacity: 1; }
+  @keyframes pulse { 0%, 100% { opacity: .14; transform: scale(.8); } 35% { opacity: 1; transform: scale(1.25); } }
+
+  /* Steps: three cells, the last inverted */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .step { padding: 28px; border-right: 1px solid var(--line); }
+  .step:last-child { border-right: 0; background: var(--inv); color: var(--invtext); }
+  .step:last-child p { color: var(--invsoft); }
+  .step .n { font-size: 96px; line-height: .9; }
+  .step:last-child .n { color: var(--red); }
+  .step h3 { font: 700 12px "Space Mono", monospace; letter-spacing: .1em; text-transform: uppercase; margin: 22px 0 10px; }
+  .step p { color: var(--text2); }
+
+  .head { padding: 22px 40px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .head h2 { font-size: 40px; line-height: 1; }
+
+  /* Features: hairline grid of key cells */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .feat { padding: 24px; border-right: 1px solid var(--soft); border-bottom: 1px solid var(--soft); }
+  .feat:nth-child(4n) { border-right: 0; }
+  .feat:nth-last-child(-n+4) { border-bottom: 0; }
+  .key { display: inline-block; min-width: 28px; padding: 2px 6px; border: 1px solid var(--line); font: 700 12px "Space Mono", monospace; text-align: center; }
+  .feat h3 { font: 700 12px "Space Mono", monospace; letter-spacing: .08em; text-transform: uppercase; margin: 14px 0 6px; }
+  .feat p { font-size: 14px; color: var(--text2); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; }
+  .two > div { padding: 32px 40px; }
+  .two > div:first-child { border-right: 1px solid var(--line); }
+  .two h3 { margin: 12px 0 10px; font-size: 22px; }
+  .two p, .two li { color: var(--text2); }
+  .two ol { padding-left: 1.2em; }
+  .two li + li { margin-top: 6px; }
+
+  .support { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 32px 40px; background: var(--panel); flex-wrap: wrap; }
+  .support h3 { font-size: 22px; margin-top: 8px; }
+  .support p { color: var(--text2); }
+
+  footer { padding: 24px 40px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+  footer a { color: var(--text2); }
+
+  a:focus-visible, .btn:focus-visible { outline: 2px solid var(--red); outline-offset: -4px; }
+  @media (prefers-reduced-motion: reduce) { .dots i { animation: none; } .dots i { opacity: .5; } }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero .copy { border-right: 0; border-bottom: 1px solid var(--line); padding: 40px 16px; }
+    .field { padding: 48px 16px 24px; }
+    .steps, .two { grid-template-columns: 1fr; }
+    .step { border-right: 0; border-bottom: 1px solid var(--line); padding: 24px 16px; }
+    .two > div { padding: 24px 16px; }
+    .two > div:first-child { border-right: 0; border-bottom: 1px solid var(--line); }
+    .grid { grid-template-columns: 1fr 1fr; }
+    .feat { padding: 20px 16px; border-right: 1px solid var(--soft) !important; border-bottom: 1px solid var(--soft) !important; }
+    .feat:nth-child(2n) { border-right: 0 !important; }
+    .head, .support, footer { padding-left: 16px; padding-right: 16px; }
+    header nav a.gh { display: none; }
+    header .cell { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="cell mono"><span class="sq"></span><b>Tilecast</b></div>
+    <div class="grow"></div>
+    <nav class="mono">
+      <a class="gh" href="https://github.com/Teninnten/Tilecast">GitHub</a>
+      <a href="https://github.com/Teninnten/Tilecast/releases/latest/download/Tilecast-Setup.exe">Download</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="copy">
+      <div class="label">For Windows 10 and 11 · Free</div>
+      <h1>Mirror your iPad to your PC.</h1>
+      <p class="lead">Tilecast puts your iPad's screen in a window on your Windows PC, over your own Wi-Fi. It uses the Screen Mirroring already on your iPad or iPhone, so there's nothing to install there.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/Teninnten/Tilecast/releases/latest/download/Tilecast-Setup.exe">↓ Download for Windows</a>
+        <a class="btn" href="https://github.com/Teninnten/Tilecast/releases">All versions</a>
+      </div>
+      <p class="label meta" id="version">Latest version · 64-bit · about 110 MB</p>
+    </div>
+    <div class="field" aria-hidden="true">
+      <span class="label">Broadcasting</span><span class="label r">11×11</span>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <section class="steps" aria-label="How to mirror">
+    <div class="step"><div class="n doto">1</div><h3>Same Wi-Fi</h3><p>Put the iPad and the PC on the same Wi-Fi network.</p></div>
+    <div class="step"><div class="n doto">2</div><h3>Screen Mirroring</h3><p>On the iPad, swipe down from the top-right corner and tap Screen Mirroring.</p></div>
+    <div class="step"><div class="n doto">3</div><h3>Pick this PC</h3><p>Choose the name Tilecast shows in big letters. Your screen appears on the PC.</p></div>
+  </section>
+
+  <div class="head"><h2 class="doto">Features</h2><span class="label">Keys while mirroring</span></div>
+  <section class="grid">
+    <div class="feat"><span class="key">F</span><h3>Full screen</h3><p>The iPad fills the monitor. Esc to leave.</p></div>
+    <div class="feat"><span class="key">Z</span><h3>Fill</h3><p>Zooms past the black bars around widescreen videos.</p></div>
+    <div class="feat"><span class="key">T</span><h3>On top</h3><p>Stays above other windows, handy for following along.</p></div>
+    <div class="feat"><span class="key">S</span><h3>Snap</h3><p>Saves a screenshot to Pictures › Tilecast.</p></div>
+    <div class="feat"><span class="key">M</span><h3>Mute</h3><p>iPad sound plays on the PC, with its own volume.</p></div>
+    <div class="feat"><span class="key">PIN</span><h3>Code for new iPads</h3><p>On shared Wi-Fi, each new iPad types a 4-digit code once.</p></div>
+    <div class="feat"><span class="key">✓</span><h3>Fixes itself</h3><p>Finds the usual reasons an iPad can't see the PC, with a button to fix them.</p></div>
+    <div class="feat"><span class="key">●</span><h3>Record</h3><p>Optionally saves each session as a video. Off unless you turn it on.</p></div>
+  </section>
+
+  <section class="two">
+    <div>
+      <span class="label">Install</span>
+      <h3>Takes a minute</h3>
+      <ol>
+        <li>Run <b>Tilecast-Setup.exe</b>.</li>
+        <li>If Windows says <b>"Windows protected your PC"</b>, click <b>More info</b>, then <b>Run anyway</b>. Tilecast is a small free app without a paid signing certificate.</li>
+        <li>Click <b>Yes</b> when Windows asks: the installer lets the iPad through Windows Firewall.</li>
+      </ol>
+    </div>
+    <div>
+      <span class="label">Privacy</span>
+      <h3>Stays on your Wi-Fi</h3>
+      <p>Your screen goes straight from the iPad to the PC, never through the internet. Once a day Tilecast asks GitHub whether a new version is out, and that's all it does online. You can switch that off in Settings.</p>
+    </div>
+  </section>
+
+  <section class="support">
+    <div>
+      <span class="label">Support Tilecast</span>
+      <h3>Free, made by one person.</h3>
+      <p>If it's useful to you, a coffee keeps it going.</p>
+    </div>
+    <a class="btn red" href="https://buymeacoffee.com/teninntendev">☕ Buy me a coffee</a>
+  </section>
+
+  <footer>
+    <p>Tilecast receives the screen with <a href="https://github.com/FDH2/UxPlay">UxPlay</a> (GPL-3.0), run unchanged, with GStreamer and FFmpeg from <a href="https://www.msys2.org">MSYS2</a>. The engine's source is attached to each <a href="https://github.com/Teninnten/Tilecast/releases">release</a>.</p>
+    <p>Not affiliated with Apple. iPad, iPhone and AirPlay are trademarks of Apple Inc.</p>
+  </footer>
+</div>
+<script>
+  // The app's 11×11 dot field: each dot pulses in turn from the red centre out
+  const dots = document.getElementById('dots');
+  for (let r = 0; r < 11; r++) for (let c = 0; c < 11; c++) {
+    const i = document.createElement('i');
+    if (r === 5 && c === 5) i.className = 'c';
+    i.style.setProperty('--d', Math.hypot(r - 5, c - 5).toFixed(2));
+    dots.appendChild(i);
+  }
+  // Version and size from the latest release (the page still reads fine without it)
+  fetch('https://api.github.com/repos/Teninnten/Tilecast/releases/latest').then(r => r.ok ? r.json() : null).then(rel => {
+    const exe = rel && rel.assets.find(a => a.name === 'Tilecast-Setup.exe');
+    if (exe) document.getElementById('version').textContent =
+      `Version ${rel.tag_name.replace(/^v/, '')} · 64-bit · ${Math.round(exe.size / 1e6)} MB`;
+  }).catch(() => {});
+</script>
+</body>
+</html>
