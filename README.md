@@ -23,7 +23,7 @@ Or see every version under [Releases](https://github.com/Teninnten/Tilecast/rele
 2. On the iPad, swipe down from the top-right corner and tap **Screen Mirroring**.
 3. Pick the name Tilecast shows in big letters.
 
-While mirroring: **F** full screen, **T** keep on top, **S** screenshot, **M** mute.
+While mirroring: **F** full screen, **Z** zoom past black bars, **T** keep on top, **S** screenshot, **M** mute.
 
 ## iPad doesn't list the PC?
 
@@ -31,12 +31,22 @@ While mirroring: **F** full screen, **T** keep on top, **S** screenshot, **M** m
 - The PC's Wi-Fi must be **Private**: Windows Settings › Network & internet › Wi-Fi › your network › Network profile type › Private.
 - School, office and café Wi-Fi often hide devices from each other. A phone hotspot usually works.
 
+## Good to know
+
+- Closing the window stops any mirroring but keeps Tilecast ready in the tray (next to the clock). Right-click its icon to quit.
+- On shared Wi-Fi, turn on Settings › Security › **Require a PIN**. Each new iPad then types a 4-digit code once.
+- To remove Tilecast: Windows Settings › Apps › Installed apps › Tilecast › Uninstall.
+
 ## Privacy
 
 Your screen only travels over your own Wi-Fi. Once a day Tilecast asks GitHub whether a new version is out; that's the only thing it does online, and Settings › General turns it off.
 
+## Support Tilecast
+
+Tilecast is free and made by one person. If it's useful to you, you can [buy me a coffee](https://buymeacoffee.com/teninntendev) ☕
+
 ## Credits
 
-Tilecast receives the screen with [UxPlay](https://github.com/FDH2/UxPlay) (GPL-3.0), run unchanged as a separate program, with GStreamer and FFmpeg from [MSYS2](https://www.msys2.org). The installer includes their licenses and the links to their source code.
+Tilecast receives the screen with [UxPlay](https://github.com/FDH2/UxPlay) (GPL-3.0), run unchanged as a separate program, with GStreamer and FFmpeg from [MSYS2](https://www.msys2.org). The installer includes their licenses; the engine's source is attached to each release.
 
 Not affiliated with Apple. iPad, iPhone and AirPlay are trademarks of Apple Inc.
